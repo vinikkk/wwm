@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Net.Http;
 
 public struct CommandData
 {
@@ -16,16 +15,16 @@ public struct CommandData
 	}
 }
 
-public class HON_Parser : MonoBehaviour
+public class HON_Parser
 {
 	//Grammar
-	Dictionary<string, CommandData> commandCallbackDictionary = new Dictionary<string, CommandData>(); //Store all the callbacks of the expected commands in the parser
+	static Dictionary<string, CommandData> commandCallbackDictionary = new Dictionary<string, CommandData>(); //Store all the callbacks of the expected commands in the parser
 
-	Stack<GameObject> objectStack = new Stack<GameObject>();
+	static Stack<GameObject> objectStack = new Stack<GameObject>();
 
-	string currentCommand;
-	string currentParameter;
-	GameObject currentObject;
+	static string currentCommand;
+	static string currentParameter;
+	static GameObject currentObject;
 	/*
 	space {
 		camera {
@@ -53,7 +52,13 @@ public class HON_Parser : MonoBehaviour
 
 	private void Start()
 	{
+		Initialize();
 
+		Parse(testData.Split(' '));
+	}
+
+	public static void Initialize()
+	{
 		//Objects
 		commandCallbackDictionary.Add("space", new CommandData(NewObject));
 		commandCallbackDictionary.Add("obj", new CommandData(NewObject));
@@ -73,11 +78,9 @@ public class HON_Parser : MonoBehaviour
 		commandCallbackDictionary.Add("{", new CommandData(StackObject));
 		//Remove from stack and Instantiate last object created
 		commandCallbackDictionary.Add("}", new CommandData(UnstackObject));
-
-		Parse(testData.Split(' '));
 	}
 
-	private void Parse(string[] data)
+	public static void Parse(string[] data)
 	{
 		for (int i = 0; i < data.Length; i++)
 		{
@@ -96,27 +99,27 @@ public class HON_Parser : MonoBehaviour
 		}
 	}
 
-	private void NewObject()
+	public static void NewObject()
 	{
 		currentObject = new GameObject(currentCommand);
 	}
 
-	private void CameraObject()
+	public static void CameraObject()
 	{
 		currentObject = Camera.main.gameObject;
 	}
 
-	private void StackObject()
+	public static void StackObject()
 	{
 		objectStack.Push(currentObject);
 	}
 
-	private void UnstackObject()
+	public static void UnstackObject()
 	{
 		objectStack.Pop();
 	}
 
-	private void AddMesh()
+	public static void AddMesh()
 	{
 		MeshFilter mf = currentObject.AddComponent(typeof(MeshFilter)) as MeshFilter;
 		MeshRenderer mr = currentObject.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
@@ -137,7 +140,7 @@ public class HON_Parser : MonoBehaviour
 		}
 	}
 
-	private void AddLight()
+	public static void AddLight()
 	{
 		Light l = currentObject.AddComponent(typeof(Light)) as Light;
 
@@ -157,24 +160,24 @@ public class HON_Parser : MonoBehaviour
 		}
 	}
 
-	private void SetRotation()
+	public static void SetRotation()
 	{
 		currentObject.transform.eulerAngles = StringToVector3(currentParameter);
 	}
 
-	private void SetWPos()
+	public static void SetWPos()
 	{
 		currentObject.transform.position = StringToVector3(currentParameter);
 	}
 
-	private void SetScale()
+	public static void SetScale()
 	{
 		currentObject.transform.localScale = StringToVector3(currentParameter);
 	}
 
 
 
-	public Vector3 StringToVector3(string str)
+	public static Vector3 StringToVector3(string str)
 	{
 		string[] parameter = str.Split(',');
 
