@@ -1,0 +1,18 @@
+space {
+	camera {
+		wpos 0,10,-10
+		rotation 45,0,0
+	}
+	obj {
+		light directional
+		rotation 45,45,0
+	}
+	obj {
+		mesh sphere
+		wpos 0,1,0
+	}
+	obj {
+		mesh plane
+		scale 10,1,10
+	}
+}
