@@ -1,0 +1,7 @@
+start {
+	
+}
+
+update {
+	this.rotation = this.rotation.y + Vector3(0,1,0);
+}

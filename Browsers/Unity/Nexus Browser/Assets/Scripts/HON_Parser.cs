@@ -6,11 +6,11 @@ using System;
 public struct CommandData
 {
 	public bool hasParameter;
-	public Action callback;
+	public Action function;
 
 	public CommandData(Action cb, bool hp = false)
 	{
-		callback = cb;
+		function = cb;
 		hasParameter = hp;
 	}
 }
@@ -25,37 +25,9 @@ public class HON_Parser
 	static string currentCommand;
 	static string currentParameter;
 	static GameObject currentObject;
-	/*
-	space {
-		camera {
-			wpos 0,0,-10
-		}
-		obj {
-			light directional
-			rotation 45,0,0
-		}
-		obj {
-			mesh sphere
-			wpos 0,1,0
-		}
-		obj {
-			mesh plane
-			scale 10,1,10
-		}
-	}
-	*/
 
 	string vec3Regex = "/\\d+,\\d+,\\d+/gm";
 	string wordOrString = "/'\\w+'|\\w+/gm";
-
-	string testData = "space { camera { wpos 0,1,-10 } obj { light directional rotation 45,45,0 } obj { mesh sphere wpos 0,1,0 } obj { mesh plane scale 10,1,10 } }";
-
-	private void Start()
-	{
-		Initialize();
-
-		Parse(testData.Split(' '));
-	}
 
 	public static void Initialize()
 	{
@@ -66,6 +38,9 @@ public class HON_Parser
 
 		//Components
 		commandCallbackDictionary.Add("mesh", new CommandData(AddMesh, true));
+		commandCallbackDictionary.Add("logic", new CommandData(AddLogic, true));
+
+		//Complex Components
 		commandCallbackDictionary.Add("light", new CommandData(AddLight, true));
 
 		//Parameters
@@ -95,7 +70,7 @@ public class HON_Parser
 			{
 				currentParameter = data[++i];
 			}
-			commandCallbackDictionary[currentCommand].callback.Invoke();
+			commandCallbackDictionary[currentCommand].function.Invoke();
 		}
 	}
 
@@ -140,6 +115,11 @@ public class HON_Parser
 		}
 	}
 
+	public static void AddLogic()
+	{
+		currentObject.AddComponent(typeof(HOL_Object));
+	}
+
 	public static void AddLight()
 	{
 		Light l = currentObject.AddComponent(typeof(Light)) as Light;
@@ -162,26 +142,21 @@ public class HON_Parser
 
 	public static void SetRotation()
 	{
-		currentObject.transform.eulerAngles = StringToVector3(currentParameter);
+		currentObject.transform.eulerAngles = Utility.StringToVector3(currentParameter);
 	}
 
 	public static void SetWPos()
 	{
-		currentObject.transform.position = StringToVector3(currentParameter);
+		currentObject.transform.position = Utility.StringToVector3(currentParameter);
 	}
 
 	public static void SetScale()
 	{
-		currentObject.transform.localScale = StringToVector3(currentParameter);
+		currentObject.transform.localScale = Utility.StringToVector3(currentParameter);
 	}
 
 
 
-	public static Vector3 StringToVector3(string str)
-	{
-		string[] parameter = str.Split(',');
 
-		return new Vector3(Int32.Parse(parameter[0]), Int32.Parse(parameter[1]), Int32.Parse(parameter[2]));
-	}
 
 }
