@@ -1,11 +1,11 @@
 space {
 	camera {
 		wpos 0,10,-10
-		logic pathOfTheHOLFile
+		rotation 45,0,0
 	}
 	obj {
 		light directional
-		rotation 45,45,0
+		logic filePath
 	}
 	obj {
 		mesh sphere
