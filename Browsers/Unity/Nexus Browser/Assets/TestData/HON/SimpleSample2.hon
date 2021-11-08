@@ -1,7 +1,7 @@
 space {
 	camera {
 		wpos 0,10,-10
-		rotation 45,0,0
+		logic pathOfTheHOLFile
 	}
 	obj {
 		light directional
