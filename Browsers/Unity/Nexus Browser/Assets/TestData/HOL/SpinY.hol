@@ -1,7 +1,8 @@
-start {
+Start {
 	
 }
 
-update {
-	this.rotation = this.rotation.y + Vector3(0,1,0);
+Update {
+	Vector3 newRotation = this.rotation.y + Vector3(0,1,0);
+	this.rotation = newRotation;
 }
