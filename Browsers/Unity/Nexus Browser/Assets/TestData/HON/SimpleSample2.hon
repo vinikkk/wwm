@@ -5,7 +5,7 @@ space {
 	}
 	obj {
 		light directional
-		logic filePath
+		logic "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HOL/Update_SpinY.hol"
 	}
 	obj {
 		mesh sphere
