@@ -117,7 +117,8 @@ public class HON_Parser
 
 	public static void AddLogic()
 	{
-		currentObject.AddComponent(typeof(HOL_Object));
+		HOL_Object obj = currentObject.AddComponent(typeof(HOL_Object)) as HOL_Object;
+		obj.Initialize(currentParameter);
 	}
 
 	public static void AddLight()

@@ -6,9 +6,16 @@ using UnityEngine.Networking;
 
 public class SpaceManager : MonoBehaviour
 {
-	string testData; // = "space { camera { wpos 0,1,-10 } obj { light directional rotation 45,45,0 } obj { mesh sphere wpos 0,1,0 } obj { mesh plane scale 10,1,10 } }";
 
-	string testURL = "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HON/SimpleSample2.hon";
+	/*
+ * 	TEST CODE
+ * 	
+		Vector3 newRotation = this.rotation.y + Vector3(0,1,0);
+		this.rotation = newRotation;
+*/
+
+	string UrlHON = "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HON/SimpleSample2.hon";
+	string UrlHOL = "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HOL/Update_SpinY.hol";
 
 	private void Awake()
 	{
@@ -18,30 +25,29 @@ public class SpaceManager : MonoBehaviour
 
 	private void Start()
 	{
-		//Get URL data
-		StartCoroutine(GetData(() =>
+		//Get HON URL data
+		StartCoroutine(Utility.GetData(UrlHON, (string result) =>
 		{
 			//Sanitize data
-			testData = testData.Replace("\n", " ").Replace("\t", "");
+			string data = result.Replace("\n", " ").Replace("\t", "");
 
 			//Parse/Build the world
-			HON_Parser.Parse(testData.Split(' '));
+			HON_Parser.Parse(data.Split(' '));
 		}));
-	}
 
-	IEnumerator GetData(Action callback)
-	{
-		UnityWebRequest www = UnityWebRequest.Get(testURL);
-		yield return www.SendWebRequest();
+		/*
+		//Get HOL URL data
+		StartCoroutine(Utility.GetData(UrlHOL, (string result) =>
+		{
+			//Sanitize data
+			string data = result.Replace("\n", " ").Replace("\t", "").Replace(";", " ;");
 
-		if (www.result != UnityWebRequest.Result.Success)
-		{
-			Debug.Log(www.error);
-		}
-		else
-		{
-			testData = www.downloadHandler.text;
-			callback?.Invoke();
-		}
+			//Parse
+			//FunctionDefinition fd = HOL_Parser.Parse(data);
+			HOL_Parser2 holParser = new HOL_Parser2();
+			holParser.ParseStatement(data);
+			Debug.Log("hey");
+		}));
+		*/
 	}
 }
