@@ -4,6 +4,20 @@ using UnityEngine;
 using System;
 using System.Text.RegularExpressions;
 
+public struct DataTableObject
+{
+	public Type type;
+	public string name;
+	public object data;
+
+	public DataTableObject(Type t, string n, object d)
+	{
+		type = t;
+		name = n;
+		data = d;
+	}
+}
+
 public class GenericDataTable
 {
 	public Dictionary<Type, Dictionary<string, object>> table = new Dictionary<Type, Dictionary<string, object>>();
@@ -28,6 +42,24 @@ public class GenericDataTable
 		return table[type][name];
 	}
 
+	public DataTableObject GetDataByName(string name)
+	{
+		DataTableObject result = new DataTableObject();
+
+		foreach (KeyValuePair<Type, Dictionary<string, object>> typeTable in table)
+		{
+			if(typeTable.Value.ContainsKey(name))
+			{
+				result.type = typeTable.Key;
+				result.name = name;
+				result.data = typeTable.Value[name];
+				break;
+			}
+		}
+
+		return result;
+	}
+
 	public bool ContainsData(Type type, string dataName)
 	{
 		return table.ContainsKey(type) && table[type].ContainsKey(dataName);
@@ -41,7 +73,7 @@ public class Constants
 	public const char CODEBLOCK_END = '}';
 	public const char PARAMETER_START = '(';
 	public const char PARAMETER_END = ')';
-	public const char END_STATEMENT = ';';
+	public const char STATEMENT_END = ';';
 	public const char RECEIVE = '=';
 	public const char ACCESS_DOT = '.';
 
@@ -68,6 +100,7 @@ public class Constants
 	public struct Constructor { };
 	public struct Function { };
 	public struct OperatorFunction { };
+	public struct StatementEnd { };
 }
 
 public enum FunctionBuildingState
@@ -106,9 +139,9 @@ public class HOL_Parser
 
 	List<string> statementList;
 
-	public void ParseStatement(ref GenericDataTable variables, ref StatementObject[] logicList, string data)
+	public void ParseStatement(ref Dictionary<string, object> variables, ref StatementObject[] logicList, string data)
 	{
-		statementList = new List<string>(Regex.Split(data, $"({Constants.RECEIVE})|({Constants.END_STATEMENT})"));
+		statementList = new List<string>(Regex.Split(data, $"({Constants.RECEIVE})|({Constants.STATEMENT_END})"));
 
 		FunctionBuildingState functionBuildingState = FunctionBuildingState.FunctionExternal;
 		StatementBuildingState statementBuildingState = StatementBuildingState.StatementExternal;
@@ -162,13 +195,17 @@ public class HOL_Parser
 					{
 						currentStatementObjects.Add(new StatementObject(typeof(Constants.Variable), codeFragmentList[codeFragmentIndex]));
 						//Add a variable into the object data table
-						variables.SetData(currentType, codeFragmentList[codeFragmentIndex], null);
+
+						//variables.SetData(currentType, codeFragmentList[codeFragmentIndex], null);
+						variables.Add(codeFragmentList[codeFragmentIndex], null);
+
 						continue;
 					}
 
 					//Here we should get the RECEIVE for statement start
 					if (codeFragmentList[codeFragmentIndex][0] == Constants.RECEIVE)
 					{
+						currentStatementObjects.Add(new StatementObject(typeof(Constants.OperatorFunction), codeFragmentList[codeFragmentIndex][0]));
 						statementBuildingState = StatementBuildingState.StatementInternal;
 						continue;
 					}
@@ -184,6 +221,13 @@ public class HOL_Parser
 
 					//Check if its any standard operator function
 					if (Constants.OPERATOR_FUNCTIONS.Contains(codeFragmentList[codeFragmentIndex][0]))
+					{	
+						currentStatementObjects.Add(new StatementObject(typeof(Constants.OperatorFunction), codeFragmentList[codeFragmentIndex][0]));
+						continue;
+					}
+
+					//Check if end of statement
+					if(codeFragmentList[codeFragmentIndex][0] == Constants.STATEMENT_END)
 					{
 						currentStatementObjects.Add(new StatementObject(typeof(Constants.OperatorFunction), codeFragmentList[codeFragmentIndex][0]));
 						continue;
@@ -232,4 +276,7 @@ public class HOL_Parser
 
 		logicList = currentStatementObjects.ToArray();
 	}
+
+	//Auxiliary Functions
+
 }

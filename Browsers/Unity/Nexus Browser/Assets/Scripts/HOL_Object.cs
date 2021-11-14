@@ -6,7 +6,9 @@ using UnityEngine.Networking;
 
 public class HOL_Object : MonoBehaviour
 {
-	GenericDataTable variables = new GenericDataTable();
+	//GenericDataTable variables = new GenericDataTable();
+
+	Dictionary<string, object> variables = new Dictionary<string, object>();
 
 	StatementObject[] updateLogic;
 
@@ -28,7 +30,7 @@ public class HOL_Object : MonoBehaviour
 		}
 	}
 
-	private void ParseLogic(string data, ref GenericDataTable vars, ref StatementObject[] statementList)
+	private void ParseLogic(string data, ref Dictionary<string, object> vars, ref StatementObject[] statementList)
 	{
 		//Sanitize
 		data = data.Replace("\n", " ").Replace("\t", "").Replace(";", " ;");
@@ -46,6 +48,47 @@ public class HOL_Object : MonoBehaviour
 	{
 		if (updateLogic == null) return;
 
-		Debug.Log("HOL LOADED!");
+		string currentVariableName;
+
+		for (int i = 0; i < updateLogic.Length; i++)
+		{
+			//Varibles
+			if(updateLogic[i].type == typeof(Constants.Variable))
+			{
+				currentVariableName = updateLogic[i].data as string;
+				continue;
+			}
+
+			//Compound Variables
+			if(updateLogic[i].type == typeof(Constants.CompoundVariable))
+			{
+				string[] s = (updateLogic[i].data as string).Split('.');
+
+				object result = null;
+				object caller = null;
+				if(s[0] == "this")
+				{
+					caller = this;
+				}
+				else
+				{
+					caller = variables[s[0]];
+				}
+
+				for (int j = 1; j < s.Length; j++)
+				{
+					caller = Utility.GetPropValue(caller, s[j]);
+				}
+
+				Type t = caller.GetType();  
+
+				continue;
+			}
+		}
+	}
+
+	public void ExecuteStatemenet(StatementObject statementObject)
+	{
+
 	}
 }

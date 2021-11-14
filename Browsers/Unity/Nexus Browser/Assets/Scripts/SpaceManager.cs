@@ -20,7 +20,6 @@ public class SpaceManager : MonoBehaviour
 	private void Awake()
 	{
 		HON_Parser.Initialize();
-		HOL_Parser.Initialize();
 	}
 
 	private void Start()
