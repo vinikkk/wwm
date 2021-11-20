@@ -6,8 +6,6 @@ using UnityEngine.Networking;
 
 public class HOL_Object : MonoBehaviour
 {
-	//GenericDataTable variables = new GenericDataTable();
-
 	Dictionary<string, object> variables = new Dictionary<string, object>();
 
 	StatementObject[] updateLogic;
