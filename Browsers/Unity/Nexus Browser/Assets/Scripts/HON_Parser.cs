@@ -15,21 +15,21 @@ public struct CommandData
 	}
 }
 
-public class HON_Parser
+public class HON_Parser : Singleton<HON_Parser>
 {
 	//Grammar
-	static Dictionary<string, CommandData> commandCallbackDictionary = new Dictionary<string, CommandData>(); //Store all the callbacks of the expected commands in the parser
+	Dictionary<string, CommandData> commandCallbackDictionary = new Dictionary<string, CommandData>(); //Store all the callbacks of the expected commands in the parser
 
-	static Stack<GameObject> objectStack = new Stack<GameObject>();
+	Stack<GameObject> objectStack = new Stack<GameObject>();
 
-	static string currentCommand;
-	static string currentParameter;
-	static GameObject currentObject;
+	string currentCommand;
+	string currentParameter;
+	GameObject currentObject;
 
 	string vec3Regex = "/\\d+,\\d+,\\d+/gm";
 	string wordOrString = "/'\\w+'|\\w+/gm";
 
-	public static void Initialize()
+	public void Initialize()
 	{
 		//Objects
 		commandCallbackDictionary.Add("space", new CommandData(NewObject));
@@ -55,7 +55,7 @@ public class HON_Parser
 		commandCallbackDictionary.Add("}", new CommandData(UnstackObject));
 	}
 
-	public static void Parse(string[] data)
+	public void Parse(string[] data)
 	{
 		for (int i = 0; i < data.Length; i++)
 		{
@@ -74,54 +74,76 @@ public class HON_Parser
 		}
 	}
 
-	public static void NewObject()
+	public void NewObject()
 	{
 		currentObject = new GameObject(currentCommand);
 	}
 
-	public static void CameraObject()
+	public void CameraObject()
 	{
 		currentObject = Camera.main.gameObject;
 	}
 
-	public static void StackObject()
+	public void StackObject()
 	{
 		objectStack.Push(currentObject);
 	}
 
-	public static void UnstackObject()
+	public void UnstackObject()
 	{
 		objectStack.Pop();
 	}
 
-	public static void AddMesh()
+	public void AddMesh()
 	{
-		MeshFilter mf = currentObject.AddComponent(typeof(MeshFilter)) as MeshFilter;
-		MeshRenderer mr = currentObject.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-
-		mr.sharedMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-
-		switch (currentParameter)
+		if (currentParameter.Contains("http")) //It means it is a URL
 		{
-			case "cube":
-				mf.sharedMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
-				break;
-			case "sphere":
-				mf.sharedMesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
-				break;
-			case "plane":
-				mf.sharedMesh = Resources.GetBuiltinResource<Mesh>("Plane.fbx");
-				break;
+			//Prepare to download the gltf and binary files
+			string url = currentParameter.Replace("\"", "") + ".glb";
+
+			//Download the description file
+			string localFilePath = string.Empty;
+
+			StartCoroutine(Utility.DownloadFile(url, (string p) =>
+			{
+				localFilePath = p;
+
+				Utility.LoadMesh(localFilePath, (GameObject go, AnimationClip[] anims) =>
+				{
+					//What to do here?
+					GameObject.Instantiate(go);
+				});
+			}));
+		}
+		else
+		{
+			MeshFilter mf = currentObject.AddComponent(typeof(MeshFilter)) as MeshFilter;
+			MeshRenderer mr = currentObject.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
+
+			mr.sharedMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+
+			switch (currentParameter)
+			{
+				case "cube":
+					mf.sharedMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+					break;
+				case "sphere":
+					mf.sharedMesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
+					break;
+				case "plane":
+					mf.sharedMesh = Resources.GetBuiltinResource<Mesh>("Plane.fbx");
+					break;
+			}
 		}
 	}
 
-	public static void AddLogic()
+	public void AddLogic()
 	{
 		HOL_Object obj = currentObject.AddComponent(typeof(HOL_Object)) as HOL_Object;
 		obj.Initialize(currentParameter);
 	}
 
-	public static void AddLight()
+	public void AddLight()
 	{
 		Light l = currentObject.AddComponent(typeof(Light)) as Light;
 
@@ -141,17 +163,17 @@ public class HON_Parser
 		}
 	}
 
-	public static void SetRotation()
+	public void SetRotation()
 	{
 		currentObject.transform.eulerAngles = Utility.StringToVector3(currentParameter);
 	}
 
-	public static void SetWPos()
+	public void SetWPos()
 	{
 		currentObject.transform.position = Utility.StringToVector3(currentParameter);
 	}
 
-	public static void SetScale()
+	public void SetScale()
 	{
 		currentObject.transform.localScale = Utility.StringToVector3(currentParameter);
 	}

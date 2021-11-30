@@ -14,24 +14,25 @@ public class SpaceManager : MonoBehaviour
 		this.rotation = newRotation;
 */
 
-	string UrlHON = "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HON/SimpleSample2.hon";
+	//string UrlHON = "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HON/SimpleSample2.hon";
+	string UrlHON = "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HON/MeshSample.hon";
 	string UrlHOL = "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HOL/Update_SpinY.hol";
 
 	private void Awake()
 	{
-		HON_Parser.Initialize();
+		HON_Parser.Instance.Initialize();
 	}
 
 	private void Start()
 	{
 		//Get HON URL data
-		StartCoroutine(Utility.GetData(UrlHON, (string result) =>
+		StartCoroutine(Utility.GetData(UrlHON, (object result) =>
 		{
 			//Sanitize data
-			string data = result.Replace("\n", " ").Replace("\t", "");
+			string data = (result as string).Replace("\n", " ").Replace("\t", "");
 
 			//Parse/Build the world
-			HON_Parser.Parse(data.Split(' '));
+			HON_Parser.Instance.Parse(data.Split(' '));
 		}));
 
 		/*
