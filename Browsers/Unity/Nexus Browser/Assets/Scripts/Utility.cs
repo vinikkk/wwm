@@ -62,9 +62,9 @@ public class Utility
 
 		//If exists return and invoke the callback, if not proceed to download
 		if (System.IO.File.Exists(fileDirectory + fileName))
-		{																	 
+		{
 			callback?.Invoke(fileDirectory + fileName);
-			yield break; 
+			yield break;
 		}
 
 		//Create directory if it does not exist
