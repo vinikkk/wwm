@@ -16,9 +16,9 @@ public class HOL_Object : MonoBehaviour
 		if (data.Contains("http://") || data.Contains("https://")) //It is URL
 		{
 			//Load script from web
-			StartCoroutine(Utility.GetData(data, (string data) =>
+			StartCoroutine(Utility.GetData(data, (object data) =>
 			{
-				ParseLogic(data, ref variables, ref updateLogic);
+				ParseLogic((data as string), ref variables, ref updateLogic);
 			}));
 		}
 		else
