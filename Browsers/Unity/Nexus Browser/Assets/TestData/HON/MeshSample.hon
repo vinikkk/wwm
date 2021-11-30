@@ -10,5 +10,6 @@ space {
 	obj {
 		mesh https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/Mesh/scene
 		wpos 0,1,0
+		name Warehouse
 	}
 }

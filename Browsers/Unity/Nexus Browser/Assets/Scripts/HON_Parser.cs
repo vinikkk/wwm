@@ -47,6 +47,7 @@ public class HON_Parser : Singleton<HON_Parser>
 		commandCallbackDictionary.Add("rotation", new CommandData(SetRotation, true));
 		commandCallbackDictionary.Add("wpos", new CommandData(SetWPos, true));
 		commandCallbackDictionary.Add("scale", new CommandData(SetScale, true));
+		commandCallbackDictionary.Add("name", new CommandData(SetName, true));
 
 		//Stack handlers
 		//Add to stack last object created
@@ -111,7 +112,8 @@ public class HON_Parser : Singleton<HON_Parser>
 				Utility.LoadMesh(localFilePath, (GameObject go, AnimationClip[] anims) =>
 				{
 					//What to do here?
-					GameObject.Instantiate(go);
+					go.name = "Mesh";
+					go.transform.SetParent(currentObject.transform);
 				});
 			}));
 		}
@@ -178,8 +180,8 @@ public class HON_Parser : Singleton<HON_Parser>
 		currentObject.transform.localScale = Utility.StringToVector3(currentParameter);
 	}
 
-
-
-
-
+	public void SetName()
+	{
+		currentObject.name = currentParameter;
+	}
 }
