@@ -8,7 +8,7 @@ space {
 		rotation 45,45,0
 	}
 	obj {
-		mesh Mesh/scene
+		mesh Mesh/Warehouse
 		wpos 0,1,0
 		name Warehouse
 	}
