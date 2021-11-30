@@ -1,6 +1,6 @@
 space {
 	camera {
-		wpos 3,0,-1.5f
+		wpos 3,0,-1.5
 		rotation 0,-90,0
 	}
 	obj {

@@ -12,7 +12,7 @@ public class Utility
 	{
 		string[] parameter = str.Split(',');
 
-		return new Vector3(Int32.Parse(parameter[0]), Int32.Parse(parameter[1]), Int32.Parse(parameter[2]));
+		return new Vector3(float.Parse(parameter[0]), float.Parse(parameter[1]), float.Parse(parameter[2]));
 	}
 
 	public static object GetPropValue(object src, string propName)
