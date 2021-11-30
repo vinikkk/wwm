@@ -7,7 +7,7 @@ space {
 		rotation 45,45,0
 	}
 	obj {
-		mesh "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/Mesh/scene"
+		mesh https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/Mesh/scene
 		wpos 0,1,0
 	}
 }
