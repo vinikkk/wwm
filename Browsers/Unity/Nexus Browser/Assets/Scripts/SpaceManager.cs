@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,8 @@ using UnityEngine.Networking;
 
 public class SpaceManager : MonoBehaviour
 {
+	public string directoryName;
+	public string fileName;
 
 	/*
  * 	TEST CODE
@@ -14,9 +17,9 @@ public class SpaceManager : MonoBehaviour
 		this.rotation = newRotation;
 */
 
-	//string UrlHON = "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HON/SimpleSample2.hon";
-	string UrlHON = "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HON/MeshSample.hon";
-	string UrlHOL = "https://raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HOL/Update_SpinY.hol";
+	//string UrlHON = "raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HON/SimpleSample2.hon";
+	string UrlHON = "raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HON/MeshSample_Warehouse.hon";
+	string UrlHOL = "raw.githubusercontent.com/vinikkk/wwn/main/Browsers/Unity/Nexus%20Browser/Assets/TestData/HOL/Update_SpinY.hol";
 
 	private void Awake()
 	{
@@ -25,14 +28,18 @@ public class SpaceManager : MonoBehaviour
 
 	private void Start()
 	{
+		//Setup directory URL for relative pathing
+		directoryName = UrlHON.Substring(0, UrlHON.LastIndexOf('/'));
+		fileName = Path.GetFileName(UrlHON);
+
 		//Get HON URL data
-		StartCoroutine(Utility.GetData(UrlHON, (object result) =>
+		StartCoroutine(Utility.GetData("https://" + directoryName + "/" + fileName, (object result) =>
 		{
 			//Sanitize data
 			string data = (result as string).Replace("\n", " ").Replace("\t", "");
 
 			//Parse/Build the world
-			HON_Parser.Instance.Parse(data.Split(' '));
+			HON_Parser.Instance.Parse(this, data.Split(' '));
 		}));
 
 		/*

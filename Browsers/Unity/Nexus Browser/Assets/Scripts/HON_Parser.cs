@@ -25,6 +25,7 @@ public class HON_Parser : Singleton<HON_Parser>
 	string currentCommand;
 	string currentParameter;
 	GameObject currentObject;
+	SpaceManager currentSpace;
 
 	string vec3Regex = "/\\d+,\\d+,\\d+/gm";
 	string wordOrString = "/'\\w+'|\\w+/gm";
@@ -56,8 +57,10 @@ public class HON_Parser : Singleton<HON_Parser>
 		commandCallbackDictionary.Add("}", new CommandData(UnstackObject));
 	}
 
-	public void Parse(string[] data)
+	public void Parse(SpaceManager space, string[] data)
 	{
+		currentSpace = space;
+
 		for (int i = 0; i < data.Length; i++)
 		{
 			if (!commandCallbackDictionary.ContainsKey(data[i]))
@@ -97,10 +100,19 @@ public class HON_Parser : Singleton<HON_Parser>
 
 	public void AddMesh()
 	{
-		if (currentParameter.Contains("http")) //It means it is a URL
+		if (currentParameter.Contains("/")) //Means it is a path
 		{
 			//Prepare to download the gltf and binary files
-			string url = currentParameter.Replace("\"", "") + ".glb";
+			string url;
+
+			if (currentParameter.Contains("http")) //Means it is a Full URL
+			{
+				url = currentParameter.Replace("\"", "") + ".glb";
+			}
+			else //Means it is a Relative URL
+			{
+				url = currentSpace.directoryName + "/" + currentParameter + ".glb";
+			}
 
 			//Download the description file
 			string localFilePath = string.Empty;
@@ -117,7 +129,7 @@ public class HON_Parser : Singleton<HON_Parser>
 				});
 			}));
 		}
-		else
+		else //It is a default mesh
 		{
 			MeshFilter mf = currentObject.AddComponent(typeof(MeshFilter)) as MeshFilter;
 			MeshRenderer mr = currentObject.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
