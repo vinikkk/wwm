@@ -1,7 +1,7 @@
 # World Wide Nexus
 The official repo of the World Wide Nexus standards.
 
-The idea of WWN is to standardize how virtual spaces and experiences are made for the "metaverse", giving everyone the opportunity to develop and build incredible experiences that are as accessible as a website today.
+The goal of the WWN is to standardize how virtual spaces and experiences are made for the "metaverse", giving everyone the opportunity to develop and build incredible experiences that are as accessible as a website today.
 
 We believe that all the necessary elements already exist for the initial creation of the so called "metaverse", and all our work is highly influenced by current internet standards, altho we know that it is not a 1 to 1 reflection.
 
